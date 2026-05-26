@@ -117,20 +117,26 @@ const TYPE_CODE_MAP: Record<string, string> = {
   '7': 'local-express', '10': 'local-express', '11': 'emu3000',
 };
 
-export function mapTypeCode(code: string): string {
-  return TYPE_CODE_MAP[code] || 'local';
+const EMU3000_FREE_SEAT_TRAINS = new Set(['108','110','111','117','127','131','132','145','146','148','160']);
+
+export function mapTypeCode(code: string, trainNo?: string): string {
+  const base = TYPE_CODE_MAP[code] || 'local';
+  if (base === 'emu3000' && trainNo && EMU3000_FREE_SEAT_TRAINS.has(trainNo)) {
+    return 'emu3000-free';
+  }
+  return base;
 }
 
-export const TRAIN_TYPE_INFO: Record<string, { color: string; name: string; seat: 'r' | 'f'; order: number }> = {
-  'local':           { color: '#4a90e2', name: '區間車',   seat: 'f', order: 0 },
-  'local-express':   { color: '#2a5fb0', name: '區間快',   seat: 'f', order: 1 },
-  'chu-kuang':       { color: '#e6c84c', name: '莒光號',   seat: 'f', order: 2 },
-  'fu-hsing':        { color: '#e6c84c', name: '復興號',   seat: 'f', order: 3 },
-  'tze-chiang':      { color: '#e8872e', name: '自強號',   seat: 'r', order: 4 },
-  'tze-chiang-3000': { color: '#9b6dff', name: '自強3000', seat: 'r', order: 5 },
-  'emu3000':         { color: '#c8b89a', name: 'EMU3000',  seat: 'r', order: 6 },
-  'taroko':          { color: '#e84057', name: '太魯閣號', seat: 'r', order: 7 },
-  'puyuma':          { color: '#d63c3c', name: '普悠瑪號', seat: 'r', order: 8 },
+export const TRAIN_TYPE_INFO: Record<string, { color: string; name: string; seat: 'r' | 'f'; order: number; tag?: string }> = {
+  'local':           { color: '#4a90e2', name: '區間車',    seat: 'f', order: 0 },
+  'local-express':   { color: '#2a5fb0', name: '區間快',    seat: 'f', order: 1 },
+  'chu-kuang':       { color: '#e6c84c', name: '莒光號',    seat: 'f', order: 2, tag: '須購買車票' },
+  'fu-hsing':        { color: '#e6c84c', name: '復興號',    seat: 'f', order: 3 },
+  'tze-chiang':      { color: '#e8872e', name: '自強號',    seat: 'r', order: 4, tag: '須購買車票' },
+  'emu3000':         { color: '#9b6dff', name: '新自強',    seat: 'r', order: 5, tag: '須購買車票' },
+  'emu3000-free':    { color: '#c8b89a', name: 'EMU3000',   seat: 'f', order: 6, tag: '提供自由座' },
+  'taroko':          { color: '#e84057', name: '太魯閣號',  seat: 'r', order: 7, tag: '須購買車票' },
+  'puyuma':          { color: '#d63c3c', name: '普悠瑪號',  seat: 'r', order: 8, tag: '須購買車票' },
 };
 
 function parseTime(t: string): number {
@@ -155,8 +161,8 @@ export async function fetchODTimetable(
       return {
         id: e.TrainInfo.TrainNo,
         trainNo: e.TrainInfo.TrainNo,
-        typeCode: mapTypeCode(e.TrainInfo.TrainTypeCode),
-        typeName: TRAIN_TYPE_INFO[mapTypeCode(e.TrainInfo.TrainTypeCode)]?.name ?? e.TrainInfo.TrainTypeName.Zh_tw,
+        typeCode: mapTypeCode(e.TrainInfo.TrainTypeCode, e.TrainInfo.TrainNo),
+        typeName: TRAIN_TYPE_INFO[mapTypeCode(e.TrainInfo.TrainTypeCode, e.TrainInfo.TrainNo)]?.name ?? e.TrainInfo.TrainTypeName.Zh_tw,
         departure: dep,
         arrival: arr,
         durationMin: dMin < 0 ? dMin + 1440 : dMin,
@@ -293,7 +299,7 @@ export async function fetchTrainByNo(trainNo: string): Promise<TrainNoResult | n
   const entry = Array.isArray(raw) ? raw[0] : null;
   if (!entry?.GeneralTimetable) return null;
   const info = entry.GeneralTimetable.GeneralTrainInfo;
-  const tc = mapTypeCode(info.TrainTypeCode);
+  const tc = mapTypeCode(info.TrainTypeCode, info.TrainNo);
   const typeInfo = TRAIN_TYPE_INFO[tc];
   return {
     trainNo: info.TrainNo,
@@ -344,7 +350,7 @@ export async function fetchStationTimetable(stationId: string): Promise<StationT
   const all: StationTTRow[] = [];
   for (const dir of (raw?.StationTimetables ?? [])) {
     for (const t of dir.TimeTables) {
-      const tc = mapTypeCode(t.TrainTypeCode);
+      const tc = mapTypeCode(t.TrainTypeCode, t.TrainNo);
       const typeInfo = TRAIN_TYPE_INFO[tc];
       all.push({
         trainNo: t.TrainNo,

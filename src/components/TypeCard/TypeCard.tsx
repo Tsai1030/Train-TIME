@@ -21,7 +21,7 @@ export function TypeCard({ typeKey, trains, farePrice, index, nextIdx, onClick }
       <div className={styles.top}>
         <div className={styles.typeInfo}>
           <span className={styles.typeName} style={{ color: tc.color }}>{tc.name}</span>
-          {typeKey === 'emu3000' && <span className={styles.freeSeat}>提供自由座</span>}
+          {tc.tag && <span className={styles.tag} style={{ color: tc.color, background: `color-mix(in srgb, ${tc.color} 12%, transparent)`, borderColor: `color-mix(in srgb, ${tc.color} 25%, transparent)` }}>{tc.tag}</span>}
           <span className={styles.count}>{trains.length} 班</span>
         </div>
         {farePrice > 0 && <span className={styles.price}>${farePrice}</span>}
