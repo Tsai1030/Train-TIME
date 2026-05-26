@@ -31,17 +31,15 @@
 .arrowLine { font-size: 12px; color: var(--s3); line-height: 1; }
 
 .statusOk {
-  flex-shrink: 0;
+  flex-shrink: 0; width: 48px; text-align: right;
   font-size: 12px; font-weight: 600; color: var(--c-ok);
-  margin-left: 6px;
 }
 .statusWarn {
-  flex-shrink: 0;
+  flex-shrink: 0; width: 48px; text-align: right;
   font-size: 12px; font-weight: 600; color: var(--c-warn);
-  margin-left: 6px;
 }
 .price {
   flex-shrink: 0;
   font-size: 16px; font-weight: 700; font-family: var(--fm); color: var(--tx);
-  padding-left: 30px;
+  padding-left: 5px;
 }
