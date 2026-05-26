@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/tdx-auth/:path*",
+      "destination": "https://tdx.transportdata.tw/:path*"
+    },
+    {
+      "source": "/tdx/:path*",
+      "destination": "https://tdx.transportdata.tw/:path*"
+    }
+  ]
+}
