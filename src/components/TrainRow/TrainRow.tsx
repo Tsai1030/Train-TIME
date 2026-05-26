@@ -20,7 +20,7 @@ export function TrainRow({ train, isNext, index, price, delayMin, onClick }: Pro
   const delayed = delayMin > 0;
 
   return (
-    <div className={styles.row} style={{ animationDelay: `${index * 0.03}s` }} onClick={onClick}>
+    <div className={styles.row} style={{ animationDelay: `${index * 0.03}s` }} onClick={onClick} data-train-row>
       {isNext && <div className={styles.nextLine} />}
 
       <div className={styles.noCol}>

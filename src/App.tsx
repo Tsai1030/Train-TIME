@@ -186,23 +186,16 @@ export default function App() {
               </div>
             )}
 
-            <button className={styles.moreToggle} onClick={() => setMoreOpen(!moreOpen)}>
-              <span className={`${styles.moreArrow} ${moreOpen ? styles.moreArrowOpen : ''}`}>&rsaquo;</span>
-              更多篩選
-            </button>
-
-            {moreOpen && (
-              <div className={styles.filterArea}>
-                <div>
-                  <div className={styles.filterLabel}>座位</div>
-                  <Chips options={[{ v: 'all', l: '全部' }, { v: 'reserved', l: '對號座' }, { v: 'free', l: '自由座' }]} value={seat} onChange={setSeat} />
-                </div>
-                <div>
-                  <div className={styles.filterLabel}>路線</div>
-                  <Chips options={[{ v: 'direct', l: '直達' }, { v: 'transfer', l: '含轉乘' }]} value={route} onChange={setRoute} />
-                </div>
+            <div className={styles.filterArea}>
+              <div>
+                <div className={styles.filterLabel}>座位</div>
+                <Chips options={[{ v: 'all', l: '全部' }, { v: 'reserved', l: '對號座' }, { v: 'free', l: '自由座' }]} value={seat} onChange={setSeat} />
               </div>
-            )}
+              <div>
+                <div className={styles.filterLabel}>路線</div>
+                <Chips options={[{ v: 'direct', l: '直達' }, { v: 'transfer', l: '含轉乘' }]} value={route} onChange={setRoute} />
+              </div>
+            </div>
 
             <button className={`${styles.searchBtn} ${fromSt && toSt ? styles.searchActive : ''}`} onClick={doSearch} disabled={!fromSt || !toSt || searching}>
               {searching ? '查詢中...' : timeMode === 'arrive' ? '查詢（最晚抵達）' : '查詢班次'}
@@ -317,13 +310,21 @@ export default function App() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (screen === 'typeList' && scrollRef.current) {
-      const trains = grouped[selType!] || [];
-      const nextI = findNext(trains);
-      if (nextI !== null && nextI > 0) {
-        const rowHeight = 49;
-        scrollRef.current.scrollTop = Math.max(0, nextI * rowHeight - 60);
-      }
+    if (screen === 'typeList') {
+      const tick = () => {
+        if (!scrollRef.current) return;
+        const trains = grouped[selType!] || [];
+        const nextI = findNext(trains);
+        if (nextI !== null && nextI > 0) {
+          const rows = scrollRef.current.querySelectorAll('[data-train-row]');
+          if (rows[nextI]) {
+            const container = scrollRef.current;
+            const row = rows[nextI] as HTMLElement;
+            container.scrollTop = row.offsetTop - 20;
+          }
+        }
+      };
+      requestAnimationFrame(() => requestAnimationFrame(tick));
     }
   }, [screen, selType, grouped]);
 
