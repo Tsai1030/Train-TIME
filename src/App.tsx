@@ -352,9 +352,9 @@ export default function App() {
         if (nextI !== null && nextI > 0) {
           const rows = scrollRef.current.querySelectorAll('[data-train-row]');
           if (rows[nextI]) {
-            const container = scrollRef.current;
-            const row = rows[nextI] as HTMLElement;
-            container.scrollTop = row.offsetTop;
+            const containerRect = scrollRef.current.getBoundingClientRect();
+            const rowRect = (rows[nextI] as HTMLElement).getBoundingClientRect();
+            scrollRef.current.scrollTop += rowRect.top - containerRect.top;
           }
         }
       };
