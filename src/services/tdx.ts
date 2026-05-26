@@ -132,7 +132,7 @@ export const TRAIN_TYPE_INFO: Record<string, { color: string; name: string; seat
   'local-express':   { color: '#2a5fb0', name: '區間快',    seat: 'f', order: 1 },
   'chu-kuang':       { color: '#e6c84c', name: '莒光號',    seat: 'f', order: 2, tag: '須購買車票' },
   'fu-hsing':        { color: '#e6c84c', name: '復興號',    seat: 'f', order: 3 },
-  'tze-chiang':      { color: '#e8872e', name: '自強號',    seat: 'r', order: 4, tag: '須購買車票' },
+  'tze-chiang':      { color: '#e8872e', name: '自強號',    seat: 'r', order: 4 },
   'emu3000':         { color: '#9b6dff', name: '新自強',    seat: 'r', order: 5, tag: '須購買車票' },
   'emu3000-free':    { color: '#c8b89a', name: 'EMU3000',   seat: 'f', order: 6, tag: '提供自由座' },
   'taroko':          { color: '#e84057', name: '太魯閣號',  seat: 'r', order: 7, tag: '須購買車票' },
