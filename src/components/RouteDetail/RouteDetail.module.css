@@ -1,5 +1,5 @@
 .root {
-  position: absolute; inset: 0; z-index: 40;
+  min-height: 100vh; min-height: 100dvh;
   background: var(--bg); display: flex; flex-direction: column;
   animation: slide-right 0.25s ease; overflow: hidden;
 }

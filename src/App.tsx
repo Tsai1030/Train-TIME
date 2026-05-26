@@ -356,53 +356,16 @@ export default function App() {
 
   return (
     <div className={styles.viewport}>
-      <div className={styles.frame}>
-        <div className={styles.statusBar}>
-          <span className={styles.statusTime}>9:41</span>
-          <div className={styles.notch} />
-          <span className={styles.statusRight}>5G</span>
-        </div>
-        <div className={styles.content}>
-          {screen === 'home' && renderHome()}
-          {screen === 'results' && renderResults()}
-          {screen === 'typeList' && renderTypeList()}
-          {screen === 'detail' && selTrain && (
-            <RouteDetail train={selTrain} stops={selStops} from={fromSt?.name ?? ''} to={toSt?.name ?? ''}
-              farePrice={fareInfo ? (TRAIN_TYPE_INFO[selTrain.typeCode]?.seat === 'r' ? fareInfo.express : fareInfo.local) : 0}
-              delayMin={delayMap[selTrain.trainNo] ?? -1}
-              onBack={() => setScreen('typeList')} />
-          )}
-        </div>
-        <div className={styles.homeIndicator} />
-      </div>
-
-      {!tweaksOpen && <button className={styles.tweaksToggle} onClick={() => setTweaksOpen(true)}>&equiv;</button>}
-      {tweaksOpen && (
-        <div className={styles.tweaksPanel}>
-          <div className={styles.tweaksHead}>
-            <span className={styles.tweaksTitle}>Tweaks</span>
-            <button className={styles.tweaksClose} onClick={() => setTweaksOpen(false)}>&times;</button>
-          </div>
-          <div className={styles.tweaksField}>
-            <label className={styles.tweaksLabel}>Theme</label>
-            <select className={styles.tweaksSelect} value={config.theme} onChange={e => setConfig({ ...config, theme: e.target.value as 'dark' | 'light' })}>
-              <option value="dark">Dark</option>
-              <option value="light">Light</option>
-            </select>
-          </div>
-          <div className={styles.tweaksField}>
-            <label className={styles.tweaksLabel}>Accent</label>
-            <div className={styles.tweaksAccents}>
-              {(['blue', 'teal', 'violet', 'coral'] as const).map(k => (
-                <button key={k}
-                  className={`${styles.accentDot} ${config.accent === k ? styles.accentActive : ''}`}
-                  style={{ background: { blue: '#5b8af5', teal: '#4ec9b0', violet: '#a78bfa', coral: '#f5846b' }[k] }}
-                  onClick={() => setConfig({ ...config, accent: k })} />
-              ))}
-            </div>
-          </div>
-        </div>
+      {screen === 'home' && renderHome()}
+      {screen === 'results' && renderResults()}
+      {screen === 'typeList' && renderTypeList()}
+      {screen === 'detail' && selTrain && (
+        <RouteDetail train={selTrain} stops={selStops} from={fromSt?.name ?? ''} to={toSt?.name ?? ''}
+          farePrice={fareInfo ? (TRAIN_TYPE_INFO[selTrain.typeCode]?.seat === 'r' ? fareInfo.express : fareInfo.local) : 0}
+          delayMin={delayMap[selTrain.trainNo] ?? -1}
+          onBack={() => setScreen('typeList')} />
       )}
+
     </div>
   );
 }
