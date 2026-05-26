@@ -1,0 +1,47 @@
+.row {
+  display: flex; align-items: center; padding: 12px 0; gap: 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--bd) 20%, transparent);
+  animation: fade-in 0.2s ease both;
+  position: relative; cursor: pointer;
+}
+.row:hover { background: var(--sa); margin: 0 -8px; padding: 12px 8px; border-radius: 8px; }
+
+.nextLine {
+  position: absolute; left: -16px; top: 0; bottom: 0;
+  width: 3px; border-radius: 2px; background: var(--c-ok);
+}
+
+.noCol { width: 46px; flex-shrink: 0; }
+.trainNo { font-size: 11px; font-family: var(--fm); font-weight: 600; }
+.nextTag { font-size: 8px; font-weight: 700; color: var(--c-ok); letter-spacing: 0.04em; display: block; }
+
+.timeRow { flex: 1; display: flex; align-items: center; gap: 4px; min-width: 0; }
+.time {
+  font-size: 18px; font-weight: 700; font-family: var(--fm);
+  color: var(--tx); letter-spacing: -0.02em;
+}
+.durArrow {
+  display: flex; flex-direction: column; align-items: center;
+  min-width: 44px; gap: 0;
+}
+.durText {
+  font-size: 9px; font-family: var(--fm); color: var(--s3);
+  font-weight: 500; line-height: 1;
+}
+.arrowLine { font-size: 10px; color: var(--s3); line-height: 1; }
+
+.statusOk {
+  flex-shrink: 0;
+  font-size: 10px; font-weight: 600; color: var(--c-ok);
+  margin-left: 4px;
+}
+.statusWarn {
+  flex-shrink: 0;
+  font-size: 10px; font-weight: 600; color: var(--c-warn);
+  margin-left: 4px;
+}
+.price {
+  flex-shrink: 0;
+  font-size: 14px; font-weight: 700; font-family: var(--fm); color: var(--tx);
+  padding-left: 30px;
+}
