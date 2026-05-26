@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useStations, type Station } from './hooks/useStations';
-import { fetchODTimetable, fetchODFare, fetchTrainDetail, fetchLiveBoard, TRAIN_TYPE_INFO, type ParsedTrain, type FareInfo, type TrainStop, type DelayMap } from './services/tdx';
+import { fetchODTimetable, fetchODFare, fetchTrainDetail, fetchLiveBoard, fetchTrainByNo, fetchStationTimetable, TRAIN_TYPE_INFO, type ParsedTrain, type FareInfo, type TrainStop, type DelayMap, type TrainNoResult, type StationTTRow } from './services/tdx';
 import { useTheme } from './hooks/useTheme';
 import { StationPicker } from './components/StationPicker/StationPicker';
 import { TypeCard } from './components/TypeCard/TypeCard';
@@ -9,7 +9,7 @@ import { RouteDetail } from './components/RouteDetail/RouteDetail';
 import { Chips } from './components/Layout/Chips';
 import styles from './App.module.css';
 
-type Screen = 'home' | 'results' | 'typeList' | 'detail';
+type Screen = 'home' | 'results' | 'typeList' | 'detail' | 'trainNoResult' | 'stationResult';
 type Tab = 's2s' | 'train' | 'stn';
 type TimeMode = 'now' | 'depart' | 'arrive';
 
@@ -74,6 +74,8 @@ export default function App() {
   const [stnQ, setStnQ] = useState<Station | null>(null);
   const [stnDir, setStnDir] = useState('dep');
   const [recent, setRecent] = useState(loadRecent);
+  const [trainNoResult, setTrainNoResult] = useState<TrainNoResult | null>(null);
+  const [stationTT, setStationTT] = useState<StationTTRow[]>([]);
 
   void route;
 
@@ -222,8 +224,21 @@ export default function App() {
         {tab === 'train' && (
           <div className={styles.formArea}>
             <p className={styles.tabDesc}>輸入車次號碼查詢路線與即時狀態</p>
-            <input className={styles.trainNumInput} value={trainNumQ} onChange={e => setTrainNumQ(e.target.value)} placeholder="例：173" />
-            <button className={`${styles.searchBtn} ${trainNumQ ? styles.searchActive : ''}`}>查詢車次</button>
+            <input className={styles.trainNumInput} value={trainNumQ} onChange={e => setTrainNumQ(e.target.value)} placeholder="例：1107" />
+            <button className={`${styles.searchBtn} ${trainNumQ ? styles.searchActive : ''}`} disabled={!trainNumQ || searching}
+              onClick={async () => {
+                if (!trainNumQ) return;
+                setSearching(true); setSearchError(null);
+                try {
+                  const result = await fetchTrainByNo(trainNumQ.trim());
+                  if (result) { setTrainNoResult(result); setScreen('trainNoResult'); }
+                  else { setSearchError('找不到此車次'); }
+                } catch (e) { setSearchError(e instanceof Error ? e.message : '查詢失敗'); }
+                finally { setSearching(false); }
+              }}>
+              {searching ? '查詢中...' : '查詢車次'}
+            </button>
+            {searchError && <div className={styles.errorMsg}>{searchError}</div>}
           </div>
         )}
 
@@ -241,7 +256,20 @@ export default function App() {
               <div className={styles.filterLabel}>方向</div>
               <Chips options={[{ v: 'dep', l: '出發列車' }, { v: 'arr', l: '到達列車' }]} value={stnDir} onChange={setStnDir} />
             </div>
-            <button className={`${styles.searchBtn} ${stnQ ? styles.searchActive : ''}`}>查詢車站</button>
+            <button className={`${styles.searchBtn} ${stnQ ? styles.searchActive : ''}`} disabled={!stnQ || searching}
+              onClick={async () => {
+                if (!stnQ) return;
+                setSearching(true); setSearchError(null);
+                try {
+                  const rows = await fetchStationTimetable(stnQ.id);
+                  setStationTT(rows);
+                  setScreen('stationResult');
+                } catch (e) { setSearchError(e instanceof Error ? e.message : '查詢失敗'); }
+                finally { setSearching(false); }
+              }}>
+              {searching ? '查詢中...' : '查詢車站'}
+            </button>
+            {searchError && <div className={styles.errorMsg}>{searchError}</div>}
           </div>
         )}
       </div>
@@ -355,11 +383,86 @@ export default function App() {
     );
   };
 
+  // ═══ TRAIN NO RESULT ═══
+  const renderTrainNoResult = () => {
+    if (!trainNoResult) return null;
+    const r = trainNoResult;
+    return (
+      <div className={styles.page}>
+        <div className={styles.pageHeader} style={{ borderBottom: `1px solid var(--bd)` }}>
+          <div className={styles.headerRow}>
+            <button className={styles.backBtn} onClick={() => setScreen('home')}>&larr;</button>
+            <span className={styles.headerSub}>車次查詢</span>
+          </div>
+          <div className={styles.typeTitle}>
+            <span style={{ color: r.color }}>{r.typeName}</span>
+            <span style={{ fontFamily: 'var(--fm)', fontSize: 18, fontWeight: 700, color: 'var(--tx)' }}>#{r.trainNo}</span>
+          </div>
+          <div className={styles.typeMeta}>{r.from} → {r.to} · {r.stops.length} 站</div>
+        </div>
+        <div className={styles.trainScroll}>
+          {r.stops.map((s, i) => {
+            const isEnd = i === 0 || i === r.stops.length - 1;
+            return (
+              <div key={i} style={{ display: 'flex', alignItems: 'center', padding: isEnd ? '14px 0' : '10px 0', borderBottom: '1px solid color-mix(in srgb, var(--bd) 15%, transparent)', gap: 12 }}>
+                <div style={{ width: 8, height: 8, borderRadius: '50%', background: isEnd ? r.color : 'var(--sa)', border: isEnd ? 'none' : `2px solid ${r.color}44`, boxShadow: isEnd ? `0 0 6px ${r.color}44` : 'none', flexShrink: 0 }} />
+                <span style={{ flex: 1, fontSize: isEnd ? 17 : 15, fontWeight: isEnd ? 800 : 400, color: isEnd ? 'var(--tx)' : 'var(--s2)' }}>{s.name}</span>
+                <span style={{ fontFamily: 'var(--fm)', fontSize: isEnd ? 15 : 13, fontWeight: isEnd ? 700 : 400, color: isEnd ? r.color : 'var(--s2)', width: 50, textAlign: 'center' }}>{s.arrival}</span>
+                <span style={{ fontFamily: 'var(--fm)', fontSize: isEnd ? 15 : 13, fontWeight: isEnd ? 700 : 400, color: isEnd ? r.color : 'var(--s2)', width: 50, textAlign: 'center' }}>{s.departure}</span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  // ═══ STATION RESULT ═══
+  const renderStationResult = () => {
+    const now = new Date();
+    const nowStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+    const filtered = stnDir === 'dep' ? stationTT : stationTT;
+    const nextI = filtered.findIndex(t => t.departure >= nowStr);
+    return (
+      <div className={styles.page}>
+        <div className={styles.pageHeader} style={{ borderBottom: `1px solid var(--bd)` }}>
+          <div className={styles.headerRow}>
+            <button className={styles.backBtn} onClick={() => setScreen('home')}>&larr;</button>
+            <span className={styles.headerSub}>車站查詢</span>
+          </div>
+          <div style={{ fontSize: 26, fontWeight: 900, color: 'var(--tx)' }}>{stnQ?.name}</div>
+          <div className={styles.typeMeta}>{filtered.length} 班次 · {stnDir === 'dep' ? '出發' : '到達'}列車</div>
+        </div>
+        <div className={styles.trainScroll} ref={scrollRef}>
+          {filtered.map((t, i) => (
+            <div key={`${t.trainNo}-${i}`} data-train-row style={{
+              display: 'flex', alignItems: 'center', padding: '14px 0', gap: 10,
+              borderBottom: '1px solid color-mix(in srgb, var(--bd) 15%, transparent)',
+              position: 'relative',
+            }}>
+              {i === nextI && <div style={{ position: 'absolute', left: -16, top: 0, bottom: 0, width: 3, borderRadius: 2, background: 'var(--c-ok)' }} />}
+              <div style={{ width: 52, flexShrink: 0 }}>
+                <div style={{ fontSize: 13, fontFamily: 'var(--fm)', fontWeight: 600, color: t.color }}>#{t.trainNo}</div>
+                {i === nextI && <span style={{ fontSize: 10, fontWeight: 700, color: 'var(--c-ok)' }}>下一班</span>}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 20, fontWeight: 700, fontFamily: 'var(--fm)', color: 'var(--tx)' }}>{t.departure}</div>
+                <div style={{ fontSize: 12, color: 'var(--s2)', marginTop: 2 }}>{t.typeName} → {t.destination}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className={styles.viewport}>
       {screen === 'home' && renderHome()}
       {screen === 'results' && renderResults()}
       {screen === 'typeList' && renderTypeList()}
+      {screen === 'trainNoResult' && renderTrainNoResult()}
+      {screen === 'stationResult' && renderStationResult()}
       {screen === 'detail' && selTrain && (
         <RouteDetail train={selTrain} stops={selStops} from={fromSt?.name ?? ''} to={toSt?.name ?? ''}
           farePrice={fareInfo ? (TRAIN_TYPE_INFO[selTrain.typeCode]?.seat === 'r' ? fareInfo.express : fareInfo.local) : 0}

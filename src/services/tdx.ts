@@ -266,3 +266,96 @@ export async function fetchLiveBoard(): Promise<DelayMap> {
     return {};
   }
 }
+
+// ─── Train Number Search ───
+interface TdxGeneralTrainInfo {
+  TrainNo: string;
+  TrainTypeCode: string;
+  TrainTypeName: { Zh_tw: string; En: string };
+  StartingStationName: { Zh_tw: string; En: string };
+  EndingStationName: { Zh_tw: string; En: string };
+}
+
+export interface TrainNoResult {
+  trainNo: string;
+  typeName: string;
+  typeCode: string;
+  color: string;
+  from: string;
+  to: string;
+  stops: TrainStop[];
+}
+
+export async function fetchTrainByNo(trainNo: string): Promise<TrainNoResult | null> {
+  const raw = await get<Array<{ GeneralTimetable: { GeneralTrainInfo: TdxGeneralTrainInfo; StopTimes: StopTime[] } }>>(
+    `/v2/Rail/TRA/GeneralTimetable/TrainNo/${trainNo}`
+  );
+  const entry = Array.isArray(raw) ? raw[0] : null;
+  if (!entry?.GeneralTimetable) return null;
+  const info = entry.GeneralTimetable.GeneralTrainInfo;
+  const tc = mapTypeCode(info.TrainTypeCode);
+  const typeInfo = TRAIN_TYPE_INFO[tc];
+  return {
+    trainNo: info.TrainNo,
+    typeName: typeInfo?.name ?? info.TrainTypeName.Zh_tw,
+    typeCode: tc,
+    color: typeInfo?.color ?? '#888',
+    from: info.StartingStationName.Zh_tw,
+    to: info.EndingStationName.Zh_tw,
+    stops: entry.GeneralTimetable.StopTimes.map(s => ({
+      name: s.StationName.Zh_tw,
+      arrival: s.ArrivalTime,
+      departure: s.DepartureTime,
+    })),
+  };
+}
+
+// ─── Station Timetable ───
+interface TdxStationTTEntry {
+  TrainNo: string;
+  TrainTypeCode: string;
+  TrainTypeName: { Zh_tw: string; En: string };
+  DestinationStationName: { Zh_tw: string; En: string };
+  ArrivalTime: string;
+  DepartureTime: string;
+}
+
+interface TdxStationTTResponse {
+  StationTimetables: Array<{
+    Direction: number;
+    TimeTables: TdxStationTTEntry[];
+  }>;
+}
+
+export interface StationTTRow {
+  trainNo: string;
+  typeName: string;
+  typeCode: string;
+  color: string;
+  destination: string;
+  arrival: string;
+  departure: string;
+}
+
+export async function fetchStationTimetable(stationId: string): Promise<StationTTRow[]> {
+  const raw = await get<TdxStationTTResponse>(
+    `/v3/Rail/TRA/DailyStationTimetable/Today/Station/${stationId}`
+  );
+  const all: StationTTRow[] = [];
+  for (const dir of (raw?.StationTimetables ?? [])) {
+    for (const t of dir.TimeTables) {
+      const tc = mapTypeCode(t.TrainTypeCode);
+      const typeInfo = TRAIN_TYPE_INFO[tc];
+      all.push({
+        trainNo: t.TrainNo,
+        typeName: typeInfo?.name ?? t.TrainTypeName.Zh_tw,
+        typeCode: tc,
+        color: typeInfo?.color ?? '#888',
+        destination: t.DestinationStationName.Zh_tw,
+        arrival: t.ArrivalTime,
+        departure: t.DepartureTime,
+      });
+    }
+  }
+  return all.sort((a, b) => a.departure.localeCompare(b.departure));
+}
