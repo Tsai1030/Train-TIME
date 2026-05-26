@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useStations, type Station } from './hooks/useStations';
-import { fetchODTimetable, fetchODFare, fetchTrainDetail, fetchLiveBoard, fetchTrainByNo, fetchStationTimetable, TRAIN_TYPE_INFO, type ParsedTrain, type FareInfo, type TrainStop, type DelayMap, type TrainNoResult, type StationTTRow } from './services/tdx';
+import { fetchODTimetable, fetchODFare, fetchTrainDetail, fetchLiveBoard, fetchTrainByNo, fetchStationTimetable, TRAIN_TYPE_INFO, EMU3000_FREE_SEAT_TRAINS, type ParsedTrain, type FareInfo, type TrainStop, type DelayMap, type TrainNoResult, type StationTTRow } from './services/tdx';
 import { useTheme } from './hooks/useTheme';
 import { StationPicker } from './components/StationPicker/StationPicker';
 import { TypeCard } from './components/TypeCard/TypeCard';
@@ -32,6 +32,12 @@ function groupTrains(trains: ParsedTrain[]): Record<string, ParsedTrain[]> {
   for (const t of trains) {
     if (!g[t.typeCode]) g[t.typeCode] = [];
     g[t.typeCode].push(t);
+  }
+  if (g['emu3000']) {
+    const free = g['emu3000'].filter(t => EMU3000_FREE_SEAT_TRAINS.has(t.trainNo));
+    if (free.length > 0) {
+      g['emu3000-free'] = free;
+    }
   }
   for (const arr of Object.values(g)) arr.sort((a, b) => a.departure.localeCompare(b.departure));
   return g;

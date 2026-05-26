@@ -117,14 +117,10 @@ const TYPE_CODE_MAP: Record<string, string> = {
   '7': 'local-express', '10': 'local-express', '11': 'emu3000',
 };
 
-const EMU3000_FREE_SEAT_TRAINS = new Set(['108','110','111','117','127','131','132','145','146','148','160']);
+export const EMU3000_FREE_SEAT_TRAINS = new Set(['108','110','111','117','127','131','132','145','146','148','160']);
 
-export function mapTypeCode(code: string, trainNo?: string): string {
-  const base = TYPE_CODE_MAP[code] || 'local';
-  if (base === 'emu3000' && trainNo && EMU3000_FREE_SEAT_TRAINS.has(trainNo)) {
-    return 'emu3000-free';
-  }
-  return base;
+export function mapTypeCode(code: string, _trainNo?: string): string {
+  return TYPE_CODE_MAP[code] || 'local';
 }
 
 export const TRAIN_TYPE_INFO: Record<string, { color: string; name: string; seat: 'r' | 'f'; order: number; tag?: string }> = {
