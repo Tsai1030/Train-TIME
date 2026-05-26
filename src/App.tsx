@@ -354,7 +354,7 @@ export default function App() {
           if (rows[nextI]) {
             const container = scrollRef.current;
             const row = rows[nextI] as HTMLElement;
-            container.scrollTop = row.offsetTop - 20;
+            container.scrollTop = row.offsetTop;
           }
         }
       };
