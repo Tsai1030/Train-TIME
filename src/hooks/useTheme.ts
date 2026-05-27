@@ -26,6 +26,14 @@ function resolveTheme(mode: ThemeMode): 'dark' | 'light' {
   return mode;
 }
 
+function applyThemeColor(color: string) {
+  document.querySelector('meta[name="theme-color"]')?.remove();
+  const m = document.createElement('meta');
+  m.name = 'theme-color';
+  m.content = color;
+  document.head.appendChild(m);
+}
+
 export function useTheme() {
   const [config, setConfig] = useState<ThemeConfig>(load);
 
@@ -34,7 +42,7 @@ export function useTheme() {
     const resolved = resolveTheme(config.theme);
     document.documentElement.setAttribute('data-theme', resolved);
     const themeColor = resolved === 'dark' ? '#0c0c0f' : '#f4f4f6';
-    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', themeColor);
+    applyThemeColor(themeColor);
   }, [config]);
 
   useEffect(() => {
@@ -43,7 +51,7 @@ export function useTheme() {
       const resolved = resolveTheme('auto');
       document.documentElement.setAttribute('data-theme', resolved);
       const themeColor = resolved === 'dark' ? '#0c0c0f' : '#f4f4f6';
-      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', themeColor);
+      applyThemeColor(themeColor);
     }, 60000);
     return () => clearInterval(interval);
   }, [config.theme]);

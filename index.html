@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="zh-TW" style="background:#0c0c0f">
+<html lang="zh-TW">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -11,11 +11,27 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="mobile-web-app-capable" content="yes" />
     <link rel="manifest" href="/manifest.json" />
+    <script>
+      (function(){
+        try {
+          var c = JSON.parse(localStorage.getItem('pulse-theme'));
+          var t = c && c.theme || 'dark';
+          if (t === 'auto') { var h = new Date().getHours(); t = (h >= 6 && h < 18) ? 'light' : 'dark'; }
+          var bg = t === 'light' ? '#f4f4f6' : '#0c0c0f';
+          document.documentElement.style.background = bg;
+          document.documentElement.setAttribute('data-theme', t);
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', bg);
+        } catch(e) {
+          document.documentElement.style.background = '#0c0c0f';
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Noto+Sans+TC:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   </head>
-  <body style="background:#0c0c0f;margin:0">
+  <body style="margin:0">
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
