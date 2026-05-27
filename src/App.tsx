@@ -53,7 +53,7 @@ function findNext(trains: ParsedTrain[]): number | null {
 export default function App() {
   const { config, setConfig } = useTheme();
   const { regions, allStations, loading: stationsLoading } = useStations();
-  const { commute, setCommute } = useCommute();
+  const { commutes, addCommute, removeCommute } = useCommute();
   const [tweaksOpen, setTweaksOpen] = useState(false);
 
   const [screen, setScreen] = useState<Screen>('home');
@@ -210,8 +210,8 @@ export default function App() {
             <button className={`${styles.searchBtn} ${fromSt && toSt ? styles.searchActive : ''}`} onClick={doSearch} disabled={!fromSt || !toSt || searching}>
               {searching ? '查詢中...' : timeMode === 'arrive' ? '查詢（最晚抵達）' : '查詢班次'}
             </button>
-            {fromSt && toSt && (!commute || commute.from.id !== fromSt.id || commute.to.id !== toSt.id) && (
-              <button className={styles.setCommuteBtn} onClick={() => setCommute({ from: fromSt, to: toSt })}>
+            {fromSt && toSt && !commutes.some(c => c.from.id === fromSt.id && c.to.id === toSt.id) && (
+              <button className={styles.setCommuteBtn} onClick={() => addCommute({ from: fromSt, to: toSt })}>
                 設為通勤路線
               </button>
             )}
@@ -288,14 +288,18 @@ export default function App() {
 
         {tab === 'commute' && (
           <div className={styles.formArea}>
-            {commute ? (
-              <div className={styles.commuteCard}>
-                <div className={styles.commuteTop}>
-                  <span className={styles.commuteTag}>我的通勤路線</span>
-                  <button className={styles.commuteRemove} onClick={() => setCommute(null)}>&times;</button>
-                </div>
-                <div className={styles.commuteRoute}>{commute.from.name} &rarr; {commute.to.name}</div>
-                <button className={styles.commuteBtn} onClick={() => { setFromSt(commute.from); setToSt(commute.to); setTimeMode('now'); setTimeout(doSearch, 0); }}>立即查詢</button>
+            {commutes.length > 0 ? (
+              <div className={styles.commuteList}>
+                {commutes.map((c, i) => (
+                  <div key={`${c.from.id}-${c.to.id}`} className={styles.commuteCard}>
+                    <div className={styles.commuteTop}>
+                      <span className={styles.commuteRoute}>{c.from.name} &rarr; {c.to.name}</span>
+                      <button className={styles.commuteRemove} onClick={() => removeCommute(i)}>&times;</button>
+                    </div>
+                    <button className={styles.commuteBtn} onClick={() => { setFromSt(c.from); setToSt(c.to); setTimeMode('now'); setTimeout(doSearch, 0); }}>立即查詢</button>
+                  </div>
+                ))}
+                <button className={styles.setCommuteBtn} onClick={() => setTab('s2s')}>+ 新增通勤路線</button>
               </div>
             ) : (
               <div className={styles.commuteEmpty}>

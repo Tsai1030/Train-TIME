@@ -15,8 +15,11 @@
 .scrollArea { flex: 1; overflow-y: auto; }
 
 /* ─── Commute Card ─── */
+.commuteList {
+  display: flex; flex-direction: column; gap: 10px;
+}
 .commuteCard {
-  margin: 4px 20px 8px; padding: 14px 16px;
+  padding: 14px 16px;
   background: var(--sf); border: 1px solid var(--bd);
   border-radius: 14px;
 }
