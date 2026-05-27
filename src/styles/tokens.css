@@ -25,15 +25,6 @@
   --ac: #5b8af5;
 }
 
-[data-theme="light"] {
-  color-scheme: light;
-  --bg: #f4f4f6; --sf: #ffffff; --sa: #eeeef1;
-  --bd: #dddde0; --bh: #c5c5ca;
-  --tx: #1a1a1e; --s2: #6b6b73; --s3: #9e9ea6;
-  --cd: #ffffff; --nb: #e6f4ea; --nb-bd: #c0e5c8;
-  --ac: #3b6ee6;
-}
-
 html, body, #root {
   height: 100%; width: 100%;
   font-family: var(--fn);

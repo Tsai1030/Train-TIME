@@ -14,7 +14,6 @@
 - **時間模式** — 現在出發 / 指定時間 / 最晚抵達（反推）
 - **進階篩選** — 對號座 / 自由座、直達 / 含轉乘
 - **三種查詢模式** — 站到站、車次查詢、車站查詢
-- **深色 / 淺色主題** — Tweaks 面板即時切換，localStorage 持久化
 - **查回程** — 結果頁一鍵交換起迄站
 
 ## 技術棧
@@ -93,8 +92,7 @@ bun run build
 src/
 ├── services/tdx.ts          TDX API 串接（認證、快取、重試）
 ├── hooks/
-│   ├── useStations.ts       車站資料載入 + 區域分組
-│   └── useTheme.ts          深淺色主題管理
+│   └── useStations.ts       車站資料載入 + 區域分組
 ├── components/
 │   ├── StationPicker/       區域分類車站選擇器
 │   ├── TypeCard/            車種摘要卡片
