@@ -31,13 +31,19 @@ export function useTheme() {
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(config));
-    document.documentElement.setAttribute('data-theme', resolveTheme(config.theme));
+    const resolved = resolveTheme(config.theme);
+    document.documentElement.setAttribute('data-theme', resolved);
+    const themeColor = resolved === 'dark' ? '#0c0c0f' : '#f4f4f6';
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', themeColor);
   }, [config]);
 
   useEffect(() => {
     if (config.theme !== 'auto') return;
     const interval = setInterval(() => {
-      document.documentElement.setAttribute('data-theme', resolveTheme('auto'));
+      const resolved = resolveTheme('auto');
+      document.documentElement.setAttribute('data-theme', resolved);
+      const themeColor = resolved === 'dark' ? '#0c0c0f' : '#f4f4f6';
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', themeColor);
     }, 60000);
     return () => clearInterval(interval);
   }, [config.theme]);
