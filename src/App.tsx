@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { useStations, type Station } from './hooks/useStations';
 import { fetchODTimetable, fetchODFare, fetchTrainDetail, fetchLiveBoard, fetchTrainByNo, fetchStationTimetable, TRAIN_TYPE_INFO, EMU3000_FREE_SEAT_TRAINS, type ParsedTrain, type FareInfo, type TrainStop, type DelayMap, type TrainNoResult, type StationTTRow } from './services/tdx';
 import { useTheme } from './hooks/useTheme';
+import { useCommute } from './hooks/useCommute';
 import { StationPicker } from './components/StationPicker/StationPicker';
 import { TypeCard } from './components/TypeCard/TypeCard';
 import { TrainRow } from './components/TrainRow/TrainRow';
@@ -52,6 +53,7 @@ function findNext(trains: ParsedTrain[]): number | null {
 export default function App() {
   const { config, setConfig } = useTheme();
   const { regions, allStations, loading: stationsLoading } = useStations();
+  const { commute, setCommute } = useCommute();
   const [tweaksOpen, setTweaksOpen] = useState(false);
 
   const [screen, setScreen] = useState<Screen>('home');
@@ -169,6 +171,14 @@ export default function App() {
         <span className={styles.brandName}>鐵道脈</span>
         <span className={styles.brandSub}>PULSE</span>
       </div>
+      {commute && tab === 's2s' && (
+        <div className={styles.commuteBar}>
+          <span className={styles.commuteLabel}>通勤</span>
+          <span className={styles.commuteRoute}>{commute.from.name} → {commute.to.name}</span>
+          <button className={styles.commuteGo} onClick={() => { setFromSt(commute.from); setToSt(commute.to); setTimeMode('now'); doSearch(); }}>查詢</button>
+          <button className={styles.commuteClose} onClick={() => setCommute(null)}>&times;</button>
+        </div>
+      )}
       {tabBar}
       <div className={styles.scrollArea}>
         {tab === 's2s' && (
@@ -315,6 +325,7 @@ export default function App() {
           <div className={styles.headerRow}>
             <button className={styles.backBtn} onClick={() => setScreen('home')}>&larr;</button>
             <span className={styles.headerSub}>選擇車種</span>
+            {fromSt && toSt && <button className={styles.commuteSetBtn} onClick={(e) => { e.stopPropagation(); setCommute({ from: fromSt, to: toSt }); }}>設通勤</button>}
             <button className={styles.flipBtn} onClick={() => { const tmp = fromSt; setFromSt(toSt); setToSt(tmp); }}>查回程</button>
           </div>
           <div className={styles.routeTitle}>
