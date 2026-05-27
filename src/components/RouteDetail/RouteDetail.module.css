@@ -4,60 +4,60 @@
   animation: slide-right 0.25s ease; overflow: hidden;
 }
 .header {
-  padding: 11px 16px; display: flex; align-items: center; gap: 10px;
+  padding: 14px 18px; display: flex; align-items: center; gap: 12px;
   border-bottom: 1px solid var(--bd);
 }
-.back { font-size: 18px; color: var(--s2); padding: 2px 6px; }
-.headerSub { font-size: 10px; color: var(--s2); }
-.headerTitle { font-size: 13px; font-weight: 700; color: var(--tx); }
-.hero { padding: 16px 18px 12px; }
+.back { font-size: 22px; color: var(--s2); padding: 2px 6px; }
+.headerSub { font-size: 13px; color: var(--s2); }
+.headerTitle { font-size: 16px; font-weight: 700; color: var(--tx); }
+.hero { padding: 18px 20px 14px; }
 .route {
   display: flex; align-items: baseline; justify-content: space-between;
 }
-.stationName { font-size: 22px; font-weight: 900; color: var(--tx); }
-.routeArrow { color: var(--s3); font-size: 13px; }
-.chipRow { display: flex; gap: 7px; margin-top: 12px; flex-wrap: wrap; justify-content: center; }
+.stationName { font-size: 26px; font-weight: 900; color: var(--tx); }
+.routeArrow { color: var(--s3); font-size: 16px; }
+.chipRow { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; justify-content: center; }
 .chip {
-  padding: 5px 10px; border-radius: 8px;
+  padding: 7px 14px; border-radius: 10px;
   background: var(--sa); border: 1px solid var(--bd);
 }
-.chipLabel { font-size: 8px; color: var(--s3); font-weight: 700; letter-spacing: 0.08em; }
-.chipVal { font-size: 13px; font-weight: 700; font-family: var(--fm); margin-top: 1px; }
-.headSign { font-size: 11px; color: var(--s3); margin-top: 8px; }
+.chipLabel { font-size: 11px; color: var(--s3); font-weight: 700; letter-spacing: 0.08em; }
+.chipVal { font-size: 16px; font-weight: 700; font-family: var(--fm); margin-top: 2px; }
+.headSign { font-size: 13px; color: var(--s3); margin-top: 10px; }
 .colHeader {
-  display: flex; align-items: center; padding: 8px 18px 6px;
+  display: flex; align-items: center; padding: 10px 20px 8px;
   border-bottom: 1px solid var(--bd);
 }
 .colStation {
-  flex: 1; padding-left: 32px;
-  font-size: 11px; font-weight: 700; color: var(--s3); letter-spacing: 0.06em;
+  flex: 1; padding-left: 36px;
+  font-size: 14px; font-weight: 700; color: var(--s3); letter-spacing: 0.06em;
 }
 .colTime {
-  width: 50px; text-align: center;
-  font-size: 11px; font-weight: 700; color: var(--s3); letter-spacing: 0.06em;
+  width: 56px; text-align: center;
+  font-size: 14px; font-weight: 700; color: var(--s3); letter-spacing: 0.06em;
 }
 .colWarn {
-  font-size: 11px; font-weight: 700; color: var(--c-warn);
+  font-size: 13px; font-weight: 700; color: var(--c-warn);
   padding-right: 6px;
 }
-.loading { padding: 30px 18px; text-align: center; font-size: 13px; color: var(--s3); }
-.stopsScroll { flex: 1; overflow-y: auto; padding: 0 18px 26px; }
-.nodeWrap { position: relative; padding-left: 32px; }
-.line { position: absolute; left: 11px; top: 18px; bottom: 18px; width: 2px; }
+.loading { padding: 30px 20px; text-align: center; font-size: 15px; color: var(--s3); }
+.stopsScroll { flex: 1; overflow-y: auto; padding: 0 20px 26px; }
+.nodeWrap { position: relative; padding-left: 36px; }
+.line { position: absolute; left: 13px; top: 20px; bottom: 20px; width: 2px; }
 .stopRow {
   display: flex; align-items: center;
   animation: fade-in 0.15s ease both;
 }
 .nodeEnd {
-  position: absolute; left: 5px;
-  width: 13px; height: 13px; border-radius: 50%; z-index: 2;
+  position: absolute; left: 6px;
+  width: 16px; height: 16px; border-radius: 50%; z-index: 2;
 }
 .nodeMiddle {
-  position: absolute; left: 8px;
-  width: 7px; height: 7px; border-radius: 50%; z-index: 2;
+  position: absolute; left: 9px;
+  width: 10px; height: 10px; border-radius: 50%; z-index: 2;
   background: var(--sa); border: 2px solid;
 }
-.stopNameEnd { font-size: 13px; font-weight: 800; color: var(--tx); flex: 1; padding: 9px 0; }
-.stopNameMid { font-size: 11px; font-weight: 400; color: var(--s2); flex: 1; padding: 6px 0; }
-.stopTimeEnd { width: 50px; text-align: center; font-family: var(--fm); font-size: 12px; font-weight: 700; color: var(--tx); }
-.stopTimeMid { width: 50px; text-align: center; font-family: var(--fm); font-size: 10px; font-weight: 400; color: var(--s2); }
+.stopNameEnd { font-size: 17px; font-weight: 800; color: var(--tx); flex: 1; padding: 12px 0; }
+.stopNameMid { font-size: 15px; font-weight: 400; color: var(--s2); flex: 1; padding: 9px 0; }
+.stopTimeEnd { width: 56px; text-align: center; font-family: var(--fm); font-size: 15px; font-weight: 700; color: var(--tx); }
+.stopTimeMid { width: 56px; text-align: center; font-family: var(--fm); font-size: 13px; font-weight: 400; color: var(--s2); }
