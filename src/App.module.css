@@ -79,10 +79,10 @@
 /* ─── Gear & Settings ─── */
 .gearBtn {
   position: absolute; right: 20px;
-  font-size: 28px; font-weight: 900; color: var(--s2);
+  color: var(--s2);
   padding: 4px; background: none; border: none;
   transition: color 0.15s;
-  -webkit-text-stroke: 1px var(--s2);
+  display: flex; align-items: center; justify-content: center;
 }
 .gearBtn:hover { color: var(--tx); }
 .settingsOverlay {
