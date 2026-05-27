@@ -32,6 +32,13 @@ function applyThemeColor(color: string) {
   m.name = 'theme-color';
   m.content = color;
   document.head.appendChild(m);
+  // iOS Safari / some Android Chrome cache the chrome color and only repaint
+  // on a user interaction. Nudge the scroll position by 1px to force a repaint.
+  requestAnimationFrame(() => {
+    const x = window.scrollX, y = window.scrollY;
+    window.scrollTo(x, y + 1);
+    window.scrollTo(x, y);
+  });
 }
 
 export function useTheme() {
