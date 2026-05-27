@@ -14,6 +14,55 @@
 }
 .scrollArea { flex: 1; overflow-y: auto; }
 
+/* ─── Commute Card ─── */
+.commuteCard {
+  margin: 4px 20px 8px; padding: 14px 16px;
+  background: var(--sf); border: 1px solid var(--bd);
+  border-radius: 14px;
+}
+.commuteTop {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 6px;
+}
+.commuteTag {
+  font-size: 11px; font-weight: 700; color: var(--ac);
+  padding: 3px 10px; border-radius: 6px;
+  background: color-mix(in srgb, var(--ac) 12%, transparent);
+}
+.commuteRemove { font-size: 18px; color: var(--s3); padding: 0 4px; }
+.commuteRoute { font-size: 18px; font-weight: 800; color: var(--tx); margin-bottom: 10px; }
+.commuteBtn {
+  width: 100%; padding: 12px; border-radius: 10px;
+  font-size: 15px; font-weight: 700; color: #fff;
+  background: var(--ac); transition: opacity 0.15s;
+}
+.commuteBtn:hover { opacity: 0.85; }
+.commuteEmpty {
+  text-align: center; padding: 40px 20px;
+}
+.commuteEmptyTitle {
+  font-size: 17px; font-weight: 700; color: var(--tx); margin-bottom: 8px;
+}
+.commuteEmptyDesc {
+  font-size: 13px; color: var(--s2); line-height: 1.6; margin-bottom: 20px;
+}
+.commuteGoSet {
+  padding: 12px 28px; border-radius: 10px;
+  font-size: 15px; font-weight: 700; color: #fff;
+  background: var(--ac); transition: opacity 0.15s;
+}
+.commuteGoSet:hover { opacity: 0.85; }
+.setCommuteBtn {
+  width: 100%; margin-top: 8px; padding: 10px;
+  border-radius: 10px; font-size: 13px; font-weight: 600;
+  color: var(--ac); background: transparent;
+  border: 1px dashed color-mix(in srgb, var(--ac) 40%, transparent);
+  transition: all 0.15s;
+}
+.setCommuteBtn:hover {
+  background: color-mix(in srgb, var(--ac) 8%, transparent);
+}
+
 /* ─── Brand ─── */
 .brand {
   display: flex; align-items: baseline; gap: 8px;

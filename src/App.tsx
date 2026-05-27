@@ -2,6 +2,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { useStations, type Station } from './hooks/useStations';
 import { fetchODTimetable, fetchODFare, fetchTrainDetail, fetchLiveBoard, fetchTrainByNo, fetchStationTimetable, TRAIN_TYPE_INFO, EMU3000_FREE_SEAT_TRAINS, type ParsedTrain, type FareInfo, type TrainStop, type DelayMap, type TrainNoResult, type StationTTRow } from './services/tdx';
 import { useTheme } from './hooks/useTheme';
+import { useCommute } from './hooks/useCommute';
 import { StationPicker } from './components/StationPicker/StationPicker';
 import { TypeCard } from './components/TypeCard/TypeCard';
 import { TrainRow } from './components/TrainRow/TrainRow';
@@ -10,7 +11,7 @@ import { Chips } from './components/Layout/Chips';
 import styles from './App.module.css';
 
 type Screen = 'home' | 'results' | 'typeList' | 'detail' | 'trainNoResult' | 'stationResult';
-type Tab = 's2s' | 'train' | 'stn';
+type Tab = 's2s' | 'train' | 'stn' | 'commute';
 type TimeMode = 'now' | 'depart' | 'arrive';
 
 function todayISO() {
@@ -52,6 +53,7 @@ function findNext(trains: ParsedTrain[]): number | null {
 export default function App() {
   const { config, setConfig } = useTheme();
   const { regions, allStations, loading: stationsLoading } = useStations();
+  const { commute, setCommute } = useCommute();
   const [tweaksOpen, setTweaksOpen] = useState(false);
 
   const [screen, setScreen] = useState<Screen>('home');
@@ -141,8 +143,8 @@ export default function App() {
 
   const tabBar = (
     <div className={styles.tabBar}>
-      {([['s2s', '站到站'], ['train', '車次'], ['stn', '車站']] as const).map(([k, l]) => (
-        <button key={k} className={`${styles.tab} ${tab === k ? styles.tabActive : ''}`} onClick={() => setTab(k)}>{l}</button>
+      {([['s2s', '站到站'], ['train', '車次'], ['stn', '車站'], ['commute', '通勤']] as const).map(([k, l]) => (
+        <button key={k} className={`${styles.tab} ${tab === k ? styles.tabActive : ''}`} onClick={() => setTab(k as Tab)}>{l}</button>
       ))}
     </div>
   );
@@ -208,6 +210,11 @@ export default function App() {
             <button className={`${styles.searchBtn} ${fromSt && toSt ? styles.searchActive : ''}`} onClick={doSearch} disabled={!fromSt || !toSt || searching}>
               {searching ? '查詢中...' : timeMode === 'arrive' ? '查詢（最晚抵達）' : '查詢班次'}
             </button>
+            {fromSt && toSt && (!commute || commute.from.id !== fromSt.id || commute.to.id !== toSt.id) && (
+              <button className={styles.setCommuteBtn} onClick={() => setCommute({ from: fromSt, to: toSt })}>
+                設為通勤路線
+              </button>
+            )}
             {searchError && <div className={styles.errorMsg}>{searchError}</div>}
 
             {recent.length > 0 && (
@@ -276,6 +283,27 @@ export default function App() {
               {searching ? '查詢中...' : '查詢車站'}
             </button>
             {searchError && <div className={styles.errorMsg}>{searchError}</div>}
+          </div>
+        )}
+
+        {tab === 'commute' && (
+          <div className={styles.formArea}>
+            {commute ? (
+              <div className={styles.commuteCard}>
+                <div className={styles.commuteTop}>
+                  <span className={styles.commuteTag}>我的通勤路線</span>
+                  <button className={styles.commuteRemove} onClick={() => setCommute(null)}>&times;</button>
+                </div>
+                <div className={styles.commuteRoute}>{commute.from.name} &rarr; {commute.to.name}</div>
+                <button className={styles.commuteBtn} onClick={() => { setFromSt(commute.from); setToSt(commute.to); setTimeMode('now'); setTimeout(doSearch, 0); }}>立即查詢</button>
+              </div>
+            ) : (
+              <div className={styles.commuteEmpty}>
+                <div className={styles.commuteEmptyTitle}>尚未設定通勤路線</div>
+                <div className={styles.commuteEmptyDesc}>在「站到站」選好出發站和到達站後，點擊「設為通勤路線」即可快速設定</div>
+                <button className={styles.commuteGoSet} onClick={() => setTab('s2s')}>前往設定</button>
+              </div>
+            )}
           </div>
         )}
       </div>
