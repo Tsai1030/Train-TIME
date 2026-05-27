@@ -18,29 +18,43 @@ export function TrainRow({ train, isNext, index, price, delayMin, onClick }: Pro
   const tc = TRAIN_TYPE_INFO[train.typeCode];
   const color = tc?.color ?? '#888';
   const delayed = delayMin > 0;
+  const now = new Date();
+  const nowStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+  const arrived = train.arrival <= nowStr;
+
+  let statusText: string;
+  let statusClass: string;
+  if (arrived) {
+    statusText = '已到站';
+    statusClass = styles.statusDone;
+  } else if (delayed) {
+    statusText = `晚${delayMin}分`;
+    statusClass = styles.statusWarn;
+  } else {
+    statusText = '準點';
+    statusClass = styles.statusOk;
+  }
 
   return (
-    <div className={styles.row} style={{ animationDelay: `${index * 0.03}s` }} onClick={onClick} data-train-row>
+    <div className={`${styles.row} ${arrived ? styles.rowDone : ''}`} style={{ animationDelay: `${index * 0.03}s` }} onClick={onClick} data-train-row>
       {isNext && <div className={styles.nextLine} />}
 
       <div className={styles.noCol}>
-        <div className={styles.trainNo} style={{ color }}>#{train.trainNo}</div>
+        <div className={styles.trainNo} style={{ color: arrived ? 'var(--s3)' : color }}>#{train.trainNo}</div>
         {isNext && <span className={styles.nextTag}>下一班</span>}
       </div>
 
       <div className={styles.timeRow}>
-        <span className={styles.time}>{train.departure}</span>
+        <span className={`${styles.time} ${arrived ? styles.timeDone : ''}`}>{train.departure}</span>
         <div className={styles.durArrow}>
           <span className={styles.durText}>{fmtDur(train.durationMin)}</span>
           <span className={styles.arrowLine}>&rarr;</span>
         </div>
-        <span className={styles.time}>{train.arrival}</span>
+        <span className={`${styles.time} ${arrived ? styles.timeDone : ''}`}>{train.arrival}</span>
       </div>
 
-      <span className={delayed ? styles.statusWarn : styles.statusOk}>
-        {delayed ? `晚${delayMin}分` : '準點'}
-      </span>
-      {price > 0 && <span className={styles.price}>${price}</span>}
+      <span className={statusClass}>{statusText}</span>
+      {price > 0 && <span className={`${styles.price} ${arrived ? styles.priceDone : ''}`}>${price}</span>}
     </div>
   );
 }

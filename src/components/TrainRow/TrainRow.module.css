@@ -30,6 +30,8 @@
 }
 .arrowLine { font-size: 12px; color: var(--s3); line-height: 1; }
 
+.rowDone { opacity: 0.45; }
+.timeDone { color: var(--s3) !important; }
 .statusOk {
   flex-shrink: 0; width: 48px; text-align: right;
   font-size: 12px; font-weight: 600; color: var(--c-ok);
@@ -38,8 +40,13 @@
   flex-shrink: 0; width: 48px; text-align: right;
   font-size: 12px; font-weight: 600; color: var(--c-warn);
 }
+.statusDone {
+  flex-shrink: 0; width: 48px; text-align: right;
+  font-size: 12px; font-weight: 600; color: var(--s3);
+}
 .price {
   flex-shrink: 0;
   font-size: 16px; font-weight: 700; font-family: var(--fm); color: var(--tx);
   padding-left: 5px;
 }
+.priceDone { color: var(--s3); }
