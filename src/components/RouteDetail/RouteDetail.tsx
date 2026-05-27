@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { TRAIN_TYPE_INFO, type ParsedTrain, type TrainStop } from '../../services/tdx';
 import styles from './RouteDetail.module.css';
 
@@ -16,34 +15,9 @@ function fmtDur(m: number) {
   return `${Math.floor(m / 60)}h${String(m % 60).padStart(2, '0')}m`;
 }
 
-function scheduleReminder(train: ParsedTrain, from: string, minutesBefore: number) {
-  const [h, m] = train.departure.split(':').map(Number);
-  const depMs = new Date().setHours(h, m, 0, 0);
-  const alertMs = depMs - minutesBefore * 60 * 1000;
-  const delay = alertMs - Date.now();
-  if (delay <= 0) { alert('此班次即將發車或已過發車時間'); return false; }
-  if (!('Notification' in window)) { alert('此瀏覽器不支援通知功能'); return false; }
-  Notification.requestPermission().then(perm => {
-    if (perm === 'granted') {
-      setTimeout(() => {
-        new Notification(`🚂 ${train.typeName} #${train.trainNo}`, {
-          body: `${from} ${train.departure} 發車，還有 ${minutesBefore} 分鐘`,
-          icon: '/train_logo_icon.svg',
-        });
-      }, delay);
-    }
-  });
-  return true;
-}
-
 export function RouteDetail({ train, stops, from, to, farePrice, delayMin, onBack }: Props) {
   const tc = TRAIN_TYPE_INFO[train.typeCode] || { color: '#888', name: train.typeName };
   const delayed = delayMin > 0;
-  const [reminded, setReminded] = useState(false);
-
-  const handleReminder = () => {
-    if (scheduleReminder(train, from, 10)) setReminded(true);
-  };
 
   const chips = [
     { l: '出發', v: train.departure, c: tc.color },
@@ -60,9 +34,6 @@ export function RouteDetail({ train, stops, from, to, farePrice, delayMin, onBac
           <div className={styles.headerSub}>班次詳情</div>
           <div className={styles.headerTitle}>{train.typeName} #{train.trainNo}</div>
         </div>
-        <button className={`${styles.remindBtn} ${reminded ? styles.reminded : ''}`} onClick={handleReminder} disabled={reminded}>
-          {reminded ? '已設提醒' : '到站提醒'}
-        </button>
       </div>
 
       <div className={styles.hero}>

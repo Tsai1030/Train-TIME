@@ -14,33 +14,6 @@
 }
 .scrollArea { flex: 1; overflow-y: auto; }
 
-/* ─── Commute Bar ─── */
-.commuteBar {
-  display: flex; align-items: center; gap: 8px;
-  padding: 10px 20px; margin: 0 16px 6px;
-  background: color-mix(in srgb, var(--ac) 8%, transparent);
-  border: 1px solid color-mix(in srgb, var(--ac) 20%, transparent);
-  border-radius: 12px;
-}
-.commuteLabel {
-  font-size: 11px; font-weight: 700; color: var(--ac);
-  padding: 2px 8px; border-radius: 5px;
-  background: color-mix(in srgb, var(--ac) 15%, transparent);
-}
-.commuteRoute { font-size: 14px; font-weight: 600; color: var(--tx); flex: 1; }
-.commuteGo {
-  padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700;
-  color: #fff; background: var(--ac); transition: opacity 0.15s;
-}
-.commuteGo:hover { opacity: 0.85; }
-.commuteClose { font-size: 16px; color: var(--s3); padding: 2px 4px; }
-.commuteSetBtn {
-  font-size: 11px; color: var(--ac); font-weight: 600;
-  margin-left: auto; padding: 4px 8px; border-radius: 6px;
-  background: color-mix(in srgb, var(--ac) 10%, transparent);
-  border: 1px solid color-mix(in srgb, var(--ac) 20%, transparent);
-}
-
 /* ─── Brand ─── */
 .brand {
   display: flex; align-items: baseline; gap: 8px;

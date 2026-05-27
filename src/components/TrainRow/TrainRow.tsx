@@ -14,10 +14,6 @@ function fmtDur(m: number) {
   return `${Math.floor(m / 60)}h${String(m % 60).padStart(2, '0')}m`;
 }
 
-function bookingUrl(trainNo: string): string {
-  return `https://tip.railway.gov.tw/tra-tip-web/tip/tip001/tip112/querybytime`;
-}
-
 export function TrainRow({ train, isNext, index, price, delayMin, onClick }: Props) {
   const tc = TRAIN_TYPE_INFO[train.typeCode];
   const color = tc?.color ?? '#888';
@@ -25,7 +21,6 @@ export function TrainRow({ train, isNext, index, price, delayMin, onClick }: Pro
   const now = new Date();
   const nowStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
   const arrived = train.arrival <= nowStr;
-  const isReserved = tc?.seat === 'r';
 
   let statusText: string;
   let statusClass: string;
@@ -39,11 +34,6 @@ export function TrainRow({ train, isNext, index, price, delayMin, onClick }: Pro
     statusText = '準點';
     statusClass = styles.statusOk;
   }
-
-  const handleBook = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    window.open(bookingUrl(train.trainNo), '_blank');
-  };
 
   return (
     <div className={`${styles.row} ${arrived ? styles.rowDone : ''}`} style={{ animationDelay: `${index * 0.03}s` }} onClick={onClick} data-train-row>
@@ -65,7 +55,6 @@ export function TrainRow({ train, isNext, index, price, delayMin, onClick }: Pro
 
       <span className={statusClass}>{statusText}</span>
       {price > 0 && <span className={`${styles.price} ${arrived ? styles.priceDone : ''}`}>${price}</span>}
-      {isReserved && !arrived && <button className={styles.bookBtn} onClick={handleBook}>訂票</button>}
     </div>
   );
 }
