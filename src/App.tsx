@@ -54,6 +54,7 @@ export default function App() {
   const { config, setConfig } = useTheme();
   const { regions, allStations, loading: stationsLoading } = useStations();
   const { commutes, addCommute, removeCommute } = useCommute();
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [tweaksOpen, setTweaksOpen] = useState(false);
 
   const [screen, setScreen] = useState<Screen>('home');
@@ -170,7 +171,29 @@ export default function App() {
       <div className={styles.brand}>
         <span className={styles.brandName}>鐵道脈</span>
         <span className={styles.brandSub}>PULSE</span>
+        <button className={styles.gearBtn} onClick={() => setSettingsOpen(true)}>⚙</button>
       </div>
+      {settingsOpen && (
+        <div className={styles.settingsOverlay} onClick={() => setSettingsOpen(false)}>
+          <div className={styles.settingsPanel} onClick={e => e.stopPropagation()}>
+            <div className={styles.settingsHeader}>
+              <span className={styles.settingsTitle}>設定</span>
+              <button className={styles.settingsClose} onClick={() => setSettingsOpen(false)}>&times;</button>
+            </div>
+            <div className={styles.settingsLabel}>主題模式</div>
+            <div className={styles.settingsOptions}>
+              {([['dark', '深色模式', '☾'], ['light', '亮色模式', '☀'], ['auto', '自動', '◐']] as const).map(([v, l, icon]) => (
+                <button key={v}
+                  className={`${styles.settingsOption} ${config.theme === v ? styles.settingsOptionActive : ''}`}
+                  onClick={() => setConfig({ ...config, theme: v as 'dark' | 'light' })}>
+                  <span className={styles.settingsOptionIcon}>{icon}</span>
+                  <span>{l}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
       {tabBar}
       <div className={styles.scrollArea}>
         {tab === 's2s' && (
