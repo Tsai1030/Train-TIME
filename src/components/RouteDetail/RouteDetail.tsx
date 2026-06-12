@@ -20,33 +20,50 @@ export function RouteDetail({ train, stops, from, to, farePrice, delayMin, onBac
   const delayed = delayMin > 0;
 
   const chips = [
-    { l: '出發', v: train.departure, c: tc.color },
-    { l: '抵達', v: train.arrival, c: 'var(--tx)' },
-    { l: '票價', v: farePrice > 0 ? `$${farePrice}` : '-', c: tc.color },
-    { l: '行車', v: fmtDur(train.durationMin), c: 'var(--tx)' },
+    { l: '票價', v: farePrice > 0 ? `$${farePrice}` : '—' },
+    { l: '行車時間', v: fmtDur(train.durationMin) },
+    { l: '停靠', v: `${stops.length || '—'} 站` },
   ];
 
   return (
-    <div className={styles.root}>
+    <div className={styles.root} style={{ '--type-c': tc.color } as React.CSSProperties}>
       <div className={styles.header}>
-        <button className={styles.back} onClick={onBack}>&larr;</button>
+        <button className={styles.back} onClick={onBack} aria-label="返回">&larr;</button>
         <div>
           <div className={styles.headerSub}>班次詳情</div>
-          <div className={styles.headerTitle}>{train.typeName} #{train.trainNo}</div>
+          <div className={styles.headerTitle}>
+            <span style={{ color: tc.color }}>{train.typeName}</span> #{train.trainNo}
+          </div>
         </div>
+        {delayed && <span className={styles.delayBadge}>晚 {delayMin} 分</span>}
       </div>
 
       <div className={styles.hero}>
+        <div className={styles.heroGlow} />
         <div className={styles.route}>
-          <span className={styles.stationName}>{from}</span>
-          <span className={styles.routeArrow}>&rarr;</span>
-          <span className={styles.stationName}>{to}</span>
+          <div className={styles.endpoint}>
+            <div className={styles.epLabel}>出發</div>
+            <div className={styles.epName}>{from}</div>
+            <div className={styles.epTime}>{train.departure}</div>
+          </div>
+          <div className={styles.routeMid}>
+            <svg viewBox="0 0 60 12" className={styles.routeSvg}>
+              <line x1="2" y1="6" x2="50" y2="6" stroke="currentColor" strokeWidth="1.2" strokeDasharray="3 4" className={styles.routeDash} />
+              <path d="M49 2l7 4-7 4" stroke="currentColor" strokeWidth="1.4" fill="none" />
+            </svg>
+            <span className={styles.routeDur}>{fmtDur(train.durationMin)}</span>
+          </div>
+          <div className={styles.endpoint}>
+            <div className={styles.epLabel}>抵達</div>
+            <div className={styles.epName}>{to}</div>
+            <div className={styles.epTimeArr}>{train.arrival}</div>
+          </div>
         </div>
         <div className={styles.chipRow}>
           {chips.map((ch, i) => (
             <div key={i} className={styles.chip}>
-              <div className={styles.chipLabel}>{ch.l}</div>
-              <div className={styles.chipVal} style={{ color: ch.c }}>{ch.v}</div>
+              <span className={styles.chipLabel}>{ch.l}</span>
+              <span className={styles.chipVal}>{ch.v}</span>
             </div>
           ))}
         </div>
@@ -55,26 +72,29 @@ export function RouteDetail({ train, stops, from, to, farePrice, delayMin, onBac
 
       <div className={styles.colHeader}>
         <span className={styles.colStation}>停靠站</span>
-        {delayed && <span className={styles.colWarn}>預估晚{delayMin}分</span>}
         <span className={styles.colTime}>到站</span>
         <span className={styles.colTime}>離站</span>
       </div>
       <div className={styles.stopsScroll}>
-        {stops.length === 0 && <div className={styles.loading}>載入中...</div>}
+        {stops.length === 0 && <div className={styles.loading}>載入路線中...</div>}
         {stops.length > 0 && (
           <div className={styles.nodeWrap}>
-            <div className={styles.line} style={{ background: `linear-gradient(180deg, ${tc.color}, ${tc.color}25)` }} />
+            <div className={styles.line} />
             {stops.map((s, i) => {
               const isEnd = i === 0 || i === stops.length - 1;
+              const isOrigin = s.name === from;
+              const isDest = s.name === to;
+              const hot = isOrigin || isDest;
               return (
-                <div key={i} className={styles.stopRow} style={{ animationDelay: `${i * 0.02}s` }}>
-                  <div
-                    className={isEnd ? styles.nodeEnd : styles.nodeMiddle}
-                    style={isEnd ? { background: tc.color, boxShadow: `0 0 6px ${tc.color}44` } : { borderColor: `${tc.color}44` }}
-                  />
-                  <span className={isEnd ? styles.stopNameEnd : styles.stopNameMid}>{s.name}</span>
-                  <span className={isEnd ? styles.stopTimeEnd : styles.stopTimeMid}>{s.arrival}</span>
-                  <span className={isEnd ? styles.stopTimeEnd : styles.stopTimeMid} style={isEnd ? { color: tc.color } : {}}>{s.departure}</span>
+                <div key={i} className={styles.stopRow} style={{ animationDelay: `${Math.min(i, 20) * 0.03}s` }}>
+                  <div className={`${isEnd || hot ? styles.nodeEnd : styles.nodeMiddle} ${hot ? styles.nodeHot : ''}`} />
+                  <span className={isEnd || hot ? styles.stopNameEnd : styles.stopNameMid}>
+                    {s.name}
+                    {isOrigin && <em className={styles.hotTag}>上車</em>}
+                    {isDest && <em className={styles.hotTag}>下車</em>}
+                  </span>
+                  <span className={isEnd || hot ? styles.stopTimeEnd : styles.stopTimeMid}>{s.arrival}</span>
+                  <span className={isEnd || hot ? styles.stopTimeEnd : styles.stopTimeMid}>{s.departure}</span>
                 </div>
               );
             })}

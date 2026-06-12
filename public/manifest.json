@@ -4,8 +4,8 @@
   "description": "台鐵即時時刻表查詢",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0c0c0f",
-  "theme_color": "#0c0c0f",
+  "background_color": "#05070d",
+  "theme_color": "#05070d",
   "icons": [
     {
       "src": "/train_logo_icon.svg",

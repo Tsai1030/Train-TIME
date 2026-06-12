@@ -5,6 +5,7 @@
   --fs: 'Space Grotesk', sans-serif;
   --fn: 'Noto Sans TC', sans-serif;
 
+  /* 車種色（功能色，不隨主題變動） */
   --c-local: #4a90e2;
   --c-chu: #e6c84c;
   --c-tze: #e8872e;
@@ -12,18 +13,30 @@
   --c-emu3000: #c8b89a;
   --c-taroko: #e84057;
   --c-puyuma: #d63c3c;
-  --c-ok: #3bba6f;
-  --c-warn: #e8664d;
+  --c-ok: #34d399;
+  --c-warn: #fb7185;
 }
 
 [data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0c0c0f; --sf: #161619; --sa: #1c1c20;
-  --bd: #27272c; --bh: #38383f;
-  --tx: #ececef; --s2: #8e8e96; --s3: #50505a;
-  --cd: #161619; --nb: #172a1c; --nb-bd: #243828;
-  --ac: #5b8af5;
+  --bg: #05070d;
+  --bg-2: #0a0f1c;
+  --sf: rgba(15, 21, 38, 0.66);
+  --sf-solid: #0c1222;
+  --sa: rgba(160, 186, 235, 0.06);
+  --bd: rgba(150, 175, 226, 0.14);
+  --bh: rgba(150, 175, 226, 0.32);
+  --tx: #eef2fb;
+  --s2: #8e9bb8;
+  --s3: #525d78;
+  --cd: var(--sf);
 }
+
+/* 主題色 — oklch 調和的四組霓虹 */
+:root, [data-accent="cyan"]   { --ac: oklch(85% 0.13 200); --ac2: oklch(70% 0.17 295); }
+[data-accent="violet"]        { --ac: oklch(76% 0.16 295); --ac2: oklch(72% 0.18 345); }
+[data-accent="amber"]         { --ac: oklch(83% 0.14 80);  --ac2: oklch(70% 0.18 25);  }
+[data-accent="green"]         { --ac: oklch(83% 0.16 160); --ac2: oklch(80% 0.13 200); }
 
 html, body, #root {
   height: 100%; width: 100%;
@@ -37,15 +50,28 @@ html, body, #root {
 html { position: fixed; inset: 0; }
 body { margin: 0; overflow: hidden; touch-action: pan-y; -ms-touch-action: pan-y; }
 
-
-@keyframes card-in { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
-@keyframes slide-right { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: translateX(0); } }
-@keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-
-button { cursor: pointer; border: none; background: none; font-family: inherit; }
-input:focus, button:focus-visible { outline: 2px solid var(--ac); outline-offset: 2px; }
+button { cursor: pointer; border: none; background: none; font-family: inherit; color: inherit; }
+input:focus-visible, button:focus-visible { outline: 2px solid var(--ac); outline-offset: 2px; }
 
 ::-webkit-scrollbar { width: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #44444a; border-radius: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(150, 175, 226, 0.25); border-radius: 3px; }
+
+/* ─── 全域動畫 ─── */
+@keyframes screen-in { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes screen-in-right { from { opacity: 0; transform: translateX(36px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes card-in { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes rise { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes sheet-up { from { transform: translateY(100%); } to { transform: translateY(0); } }
+@keyframes pulse-dot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.35; transform: scale(0.8); } }
+@keyframes draw-line { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes glow-breathe {
+  0%, 100% { box-shadow: 0 0 18px color-mix(in srgb, var(--ac) 22%, transparent), 0 0 50px color-mix(in srgb, var(--ac2) 10%, transparent); }
+  50%      { box-shadow: 0 0 30px color-mix(in srgb, var(--ac) 38%, transparent), 0 0 80px color-mix(in srgb, var(--ac2) 18%, transparent); }
+}
+@keyframes hint-bounce { 0%, 100% { transform: translateY(0); opacity: 0.5; } 50% { transform: translateY(7px); opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
